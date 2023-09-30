@@ -13,6 +13,23 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Configuração AppSetings
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+
+builder.Services
+       .AddDbContext<LabMedicineContext>(options =>
+                                             options.UseSqlServer(connectionString));
+//Configuração para deixar as rotas com letra minuscula
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -35,9 +52,6 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
-
-
-string connectionString = "Server=DESKTOP-6HE46OL\\SQLEXPRESS;Database=labmedicinebd;Trusted_Connection=True;TrustServerCertificate=True;";
 
 //Injeção de Dependencia do Context
 
